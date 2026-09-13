@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rhoodstone Mission</title>
+  <meta name="description" content="Rhoodstone Mission — discover projects, complete missions, and become eligible for GTD rewards.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="nav">
+    <a class="brand" href="#">
+      <span class="brand-mark">R</span>
+      <span>Rhoodstone <b>Mission</b></span>
+    </a>
+    <nav>
+      <a href="#projects">Projects</a>
+      <a href="#how">How it works</a>
+    </nav>
+    <button class="btn btn-small btn-outline" id="connectBtn">Connect X</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> THE MISSION HUB</div>
+        <h1>Discover.<br><em>Complete.</em><br>Get rewarded.</h1>
+        <p>One profile. Multiple projects. 24-hour missions. Complete a project’s tasks and enter its GTD draw.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#projects">Explore missions <span>↗</span></a>
+          <button class="btn btn-ghost" id="heroConnect">Connect X <span>→</span></button>
+        </div>
+        <div class="trust-row">
+          <div><strong>24H</strong><span>Project window</span></div>
+          <div><strong>10–20</strong><span>Projects at a time</span></div>
+          <div><strong>RANDOM</strong><span>Winner selection</span></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="orb orb-one"></div>
+        <div class="orb orb-two"></div>
+        <div class="stone">
+          <div class="stone-shine"></div>
+          <div class="stone-letter">R</div>
+        </div>
+        <div class="orbit orbit-a"></div>
+        <div class="orbit orbit-b"></div>
+        <div class="float-card card-top"><span class="dot live"></span> LIVE MISSION <b>24:00:00</b></div>
+        <div class="float-card card-bottom"><span>GTD POOL</span><strong>15 WINNERS</strong></div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div><span>ACTIVE PROJECTS</span><strong id="activeCount">04</strong></div>
+      <div><span>MISSIONS COMPLETED</span><strong>12,480+</strong></div>
+      <div><span>GTD ALLOCATIONS</span><strong>240</strong></div>
+      <div><span>NETWORKS</span><strong>EVM · SOL · SUI</strong></div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">LIVE NOW</div>
+          <h2>Mission projects</h2>
+        </div>
+        <div class="filter">
+          <button class="filter-active">All</button><button>Ending soon</button><button>New</button>
+        </div>
+      </div>
+      <div class="project-grid" id="projectGrid"></div>
+    </section>
+
+    <section class="how section" id="how">
+      <div class="section-head">
+        <div><div class="eyebrow">SIMPLE BY DESIGN</div><h2>How Rhoodstone Mission works</h2></div>
+      </div>
+      <div class="steps">
+        <article><span>01</span><h3>Connect once</h3><p>Sign in with X and create your permanent mission profile.</p></article>
+        <article><span>02</span><h3>Build your profile</h3><p>Add your EVM, Solana and Sui wallet addresses once.</p></article>
+        <article><span>03</span><h3>Complete projects</h3><p>Open a live project, finish its listed tasks, then submit.</p></article>
+        <article><span>04</span><h3>Enter the draw</h3><p>Eligible submissions join the project’s automatic GTD winner pool.</p></article>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div><div class="eyebrow">YOUR PROFILE. YOUR MISSIONS.</div><h2>Ready to make your move?</h2></div>
+      <button class="btn btn-primary" id="ctaConnect">Create profile <span>↗</span></button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand"><span class="brand-mark">R</span><span>Rhoodstone <b>Mission</b></span></div>
+    <span>© 2026 Rhoodstone Mission</span>
+  </footer>
+
+  <div class="modal hidden" id="profileModal">
+    <div class="modal-box">
+      <button class="close" id="closeModal">×</button>
+      <div class="eyebrow">YOUR PROFILE</div>
+      <h2>Connect with X</h2>
+      <p class="muted">Frontend demo only. Real X OAuth and wallet storage will be connected to the backend later.</p>
+      <button class="btn btn-primary full" id="demoLogin">Continue with X <span>→</span></button>
+      <div class="demo-note">No wallet is requested until your profile is created.</div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
