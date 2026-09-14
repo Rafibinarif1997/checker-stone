@@ -1,1 +1,9 @@
-{"name":"rh-hub","version":"2.0.0","private":true,"type":"commonjs","scripts":{"start":"node server.js"},"dependencies":{"express":"^5.1.0"}}
+{
+  "name":"robinhood-chain-copilot",
+  "version":"1.0.0",
+  "private":true,
+  "type":"module",
+  "scripts":{"start":"node server.js","dev":"node --watch server.js"},
+  "dependencies":{"express":"^5.1.0","helmet":"^8.1.0","express-rate-limit":"^8.0.1","better-sqlite3":"^12.2.0","dotenv":"^17.2.1","ethers":"^6.15.0"},
+  "engines":{"node":">=20"}
+}

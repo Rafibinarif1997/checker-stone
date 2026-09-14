@@ -1,31 +1,106 @@
-const express=require('express');
-const path=require('path');
-const fs=require('fs');
-const crypto=require('crypto');
-const app=express();
-const PORT=Number(process.env.PORT||3000);
-const RPC=process.env.RH_RPC_URL||'https://rpc.mainnet.chain.robinhood.com';
-const BLOCKSCOUT=process.env.BLOCKSCOUT_API||'https://robinhoodchain.blockscout.com/api';
-const ADMIN_KEY=process.env.ADMIN_KEY||'change-me-now';
-const DATA=path.join(__dirname,'data');
-const DB=path.join(DATA,'projects.json');
-fs.mkdirSync(DATA,{recursive:true});
-if(!fs.existsSync(DB))fs.writeFileSync(DB,'[]');
-app.use(express.json({limit:'150kb'}));
-app.use(express.static(path.join(__dirname,'public')));
-function read(){try{return JSON.parse(fs.readFileSync(DB,'utf8'))}catch{return[]}}
-function write(v){fs.writeFileSync(DB,JSON.stringify(v,null,2))}
-async function rpc(method,params=[]){const r=await fetch(RPC,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method,params})});if(!r.ok)throw Error(`RPC HTTP ${r.status}`);const j=await r.json();if(j.error)throw Error(j.error.message||'RPC error');return j.result}
-function valid(a){return /^0x[a-fA-F0-9]{40}$/.test(a||'')}
-function admin(req){return req.headers['x-admin-key']===ADMIN_KEY}
-app.get('/api/health',(_,res)=>res.json({ok:true,service:'RH//HUB',chainId:4663}));
-app.get('/api/chain',async(_,res)=>{try{const [block,gas,net,client]=await Promise.all([rpc('eth_blockNumber'),rpc('eth_gasPrice'),rpc('net_version'),rpc('web3_clientVersion')]);res.json({chainId:4663,network:net,blockNumber:parseInt(block,16),gasWei:gas,client,rpc:RPC})}catch(e){res.status(503).json({error:e.message})}});
-app.get('/api/address/:address',async(req,res)=>{const a=req.params.address;if(!valid(a))return res.status(400).json({error:'Invalid EVM address'});try{const [code,balance,nonce]=await Promise.all([rpc('eth_getCode',[a,'latest']),rpc('eth_getBalance',[a,'latest']),rpc('eth_getTransactionCount',[a,'latest'])]);res.json({address:a,isContract:code!=='0x',codeBytes:code==='0x'?0:(code.length-2)/2,balanceWei:balance,nonce:parseInt(nonce,16),blockscout:`https://robinhoodchain.blockscout.com/address/${a}`})}catch(e){res.status(503).json({error:e.message})}});
-app.get('/api/token/:address',async(req,res)=>{const a=req.params.address;if(!valid(a))return res.status(400).json({error:'Invalid EVM address'});const calls=[['name','0x06fdde03'],['symbol','0x95d89b41'],['decimals','0x313ce567'],['totalSupply','0x18160ddd']];try{const out={address:a};for(const [k,data] of calls){try{const x=await rpc('eth_call',[{to:a,data},'latest']);out[k]=x}catch{out[k]=null}}res.json(out)}catch(e){res.status(503).json({error:e.message})}});
-app.get('/api/projects',(req,res)=>res.json(read().filter(p=>p.status==='approved').sort((a,b)=>b.createdAt.localeCompare(a.createdAt))));
-app.post('/api/projects',(req,res)=>{const {name,address,category,link,description,logo}=req.body||{};if(!name||!valid(address))return res.status(400).json({error:'Project name and valid contract address are required'});const list=read();const p={id:crypto.randomBytes(8).toString('hex'),name:name.trim().slice(0,80),address,category:(category||'Other').slice(0,30),link:(link||'').slice(0,300),description:(description||'').slice(0,600),logo:(logo||'').slice(0,500),status:'pending',createdAt:new Date().toISOString()};list.push(p);write(list);res.status(201).json({ok:true,id:p.id,status:p.status})});
-app.get('/api/admin/projects',(req,res)=>{if(!admin(req))return res.status(401).json({error:'Unauthorized'});res.json(read().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)))});
-app.post('/api/admin/projects/:id',(req,res)=>{if(!admin(req))return res.status(401).json({error:'Unauthorized'});const list=read();const p=list.find(x=>x.id===req.params.id);if(!p)return res.status(404).json({error:'Not found'});if(!['approved','rejected','pending'].includes(req.body.status))return res.status(400).json({error:'Invalid status'});p.status=req.body.status;p.reviewedAt=new Date().toISOString();write(list);res.json(p)});
-app.get('/api/blockscout/stats',async(_,res)=>{try{const r=await fetch(`${BLOCKSCOUT}?module=stats&action=ethsupply`);const j=await r.json();res.json(j)}catch(e){res.status(503).json({error:e.message})}});
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-app.listen(PORT,()=>console.log(`RH//HUB running on http://localhost:${PORT}`));
+import 'dotenv/config';
+import express from 'express';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import Database from 'better-sqlite3';
+import { JsonRpcProvider, isAddress, formatEther } from 'ethers';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const app = express();
+const PORT = Number(process.env.PORT || 3000);
+const RPC = process.env.RH_RPC_URL || 'https://rpc.mainnet.chain.robinhood.com';
+const provider = new JsonRpcProvider(RPC, { chainId: 4663, name: 'Robinhood Chain' });
+
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(express.json({ limit: '200kb' }));
+app.use(rateLimit({ windowMs: 60_000, limit: 120, standardHeaders: true, legacyHeaders: false }));
+app.use(express.static(__dirname));
+
+const db = new Database(path.join(__dirname, 'copilot.db')); 
+db.pragma('journal_mode = WAL');
+db.exec(`CREATE TABLE IF NOT EXISTS projects(
+ id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, category TEXT NOT NULL,
+ contract TEXT, website TEXT, description TEXT NOT NULL, logo TEXT, status TEXT NOT NULL DEFAULT 'pending',
+ created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS watchlist(address TEXT PRIMARY KEY, label TEXT, created_at TEXT NOT NULL);`);
+if (process.env.SEED_DEMO_DATA === 'true' && db.prepare('SELECT COUNT(*) c FROM projects').get().c === 0) {
+  const now = new Date().toISOString();
+  const seed = db.prepare('INSERT INTO projects(name,category,contract,website,description,logo,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)');
+  [['RH Developer Tools','TOOL','','','Developer infrastructure and analytics.', '', 'approved'],['RWA Atlas','RWA','','','Explore tokenized real-world assets.', '', 'approved'],['Pixel Markets','DEFI','','','Community DeFi discovery.', '', 'approved']].forEach(x=>seed.run(...x,now,now));
+}
+
+async function rhFetch(url) {
+  const r = await fetch(url, { headers: { accept: 'application/json' } });
+  if (!r.ok) throw new Error(`Upstream ${r.status}`);
+  return r.json();
+}
+function admin(req,res,next){
+  const key=req.headers['x-admin-key'];
+  if(!process.env.ADMIN_KEY || key!==process.env.ADMIN_KEY) return res.status(401).json({error:'Unauthorized'});
+  next();
+}
+
+app.get('/api/health', async (_req,res)=>{
+  try {
+    const [network, block, gas] = await Promise.all([provider.getNetwork(), provider.getBlockNumber(), provider.getFeeData()]);
+    res.json({ok:true, chainId:Number(network.chainId), block, gasPrice:gas.gasPrice?.toString()||null, rpc:RPC});
+  } catch(e){ res.status(503).json({ok:false,error:e.message}); }
+});
+app.get('/api/stock/assets', async (_req,res)=>{ try { const d=await rhFetch('https://api.robinhood.com/rhj/assets'); res.json(d); } catch(e){res.status(502).json({error:e.message});} });
+app.get('/api/stock/prices/:symbol', async (req,res)=>{ try { const d=await rhFetch(`https://api.robinhood.com/rhj/prices/${encodeURIComponent(req.params.symbol.toUpperCase())}`); res.json(d); } catch(e){res.status(502).json({error:e.message});} });
+app.get('/api/stock/corporate-actions', async (_req,res)=>{ try { const d=await rhFetch('https://api.robinhood.com/rhj/corporate-actions'); res.json(d); } catch(e){res.status(502).json({error:e.message});} });
+
+app.get('/api/address/:address', async (req,res)=>{
+  const a=req.params.address;
+  if(!isAddress(a)) return res.status(400).json({error:'Invalid EVM address'});
+  try {
+    const [balance,code,nonce]=await Promise.all([provider.getBalance(a),provider.getCode(a),provider.getTransactionCount(a)]);
+    res.json({address:a, type:code==='0x'?'EOA':'CONTRACT', ethBalance:formatEther(balance), nonce, bytecodeBytes:code==='0x'?0:(code.length-2)/2, blockscout:`https://robinhoodchain.blockscout.com/address/${a}`});
+  }catch(e){res.status(502).json({error:e.message});}
+});
+
+app.get('/api/wallet/:address', async (req,res)=>{
+  const a=req.params.address;
+  if(!isAddress(a)) return res.status(400).json({error:'Invalid EVM address'});
+  try {
+    const balance=await provider.getBalance(a);
+    let indexed=null;
+    if(process.env.ALCHEMY_API_KEY){
+      const url=`https://api.g.alchemy.com/data/v1/${process.env.ALCHEMY_API_KEY}/assets/tokens/by-address?addresses[]=${a}&networks=robinhood-mainnet`;
+      try { indexed=await (await fetch(url)).json(); } catch{}
+    }
+    res.json({address:a,eth:formatEther(balance),indexed});
+  }catch(e){res.status(502).json({error:e.message});}
+});
+
+app.get('/api/projects', (req,res)=>{
+  const status=req.query.status==='all'?null:(req.query.status||'approved');
+  const rows=status?db.prepare('SELECT * FROM projects WHERE status=? ORDER BY id DESC').all(status):db.prepare('SELECT * FROM projects ORDER BY id DESC').all();
+  res.json(rows);
+});
+app.post('/api/projects',(req,res)=>{
+  const {name,category,contract='',website='',description,logo=''}=req.body||{};
+  if(!name||!category||!description||String(name).length>80||String(description).length>500) return res.status(400).json({error:'Name, category and description are required; length limits apply.'});
+  if(contract && !isAddress(contract)) return res.status(400).json({error:'Contract must be a valid EVM address.'});
+  const now=new Date().toISOString();
+  const info=db.prepare('INSERT INTO projects(name,category,contract,website,description,logo,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)').run(name,category,contract,website,description,logo,'pending',now,now);
+  res.status(201).json({id:info.lastInsertRowid,status:'pending'});
+});
+app.post('/api/projects/:id/approve',admin,(req,res)=>{const now=new Date().toISOString();db.prepare('UPDATE projects SET status=?,updated_at=? WHERE id=?').run('approved',now,req.params.id);res.json({ok:true});});
+app.post('/api/projects/:id/reject',admin,(req,res)=>{const now=new Date().toISOString();db.prepare('UPDATE projects SET status=?,updated_at=? WHERE id=?').run('rejected',now,req.params.id);res.json({ok:true});});
+
+app.get('/api/watchlist',(req,res)=>res.json(db.prepare('SELECT * FROM watchlist ORDER BY created_at DESC').all()));
+app.post('/api/watchlist',(req,res)=>{const {address,label=''}=req.body||{};if(!isAddress(address))return res.status(400).json({error:'Invalid address'});db.prepare('INSERT OR REPLACE INTO watchlist(address,label,created_at) VALUES(?,?,?)').run(address.toLowerCase(),label,new Date().toISOString());res.status(201).json({ok:true});});
+app.delete('/api/watchlist/:address',(req,res)=>{db.prepare('DELETE FROM watchlist WHERE address=?').run(req.params.address.toLowerCase());res.json({ok:true});});
+
+app.get('/api/bridge-info',(_req,res)=>res.json({routes:[
+ {name:'Arbitrum canonical bridge',speed:'~10 min deposit / ~7 day withdrawal',bestFor:'Trustless Ethereum ↔ Robinhood Chain transfers',official:true},
+ {name:'LayerZero OFT / Stargate',speed:'Minutes, source-chain dependent',bestFor:'Fast cross-chain token movement',official:true},
+ {name:'Chainlink CCIP / Transporter',speed:'Minutes, source-chain dependent',bestFor:'Cross-chain token transfer and messaging',official:true}
+],note:'Live fee/ETA quotes are not fabricated; integrate a route provider before execution.'}));
+
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'index.html')));
+app.listen(PORT,()=>console.log(`Robinhood Chain Copilot listening on http://localhost:${PORT}`));

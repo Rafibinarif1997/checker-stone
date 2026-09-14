@@ -1,32 +1,25 @@
-# RH//HUB — Complete Pixel Website
+# Robinhood Chain Copilot
 
-This is the consolidated final build. It is a single deployable Node/Express application, not a collection of partial ZIPs.
+A production-oriented foundation for an independent Robinhood Chain portfolio, Stock Token, bridge and contract-intelligence product.
 
-## Included
-- Pixel/retro full responsive UI
-- Live Robinhood Chain RPC health, block and gas reads
-- EVM wallet connect + automatic network add/switch
-- Read-only wallet balance
-- Live contract scanner: contract/EOA, bytecode size, ETH balance, nonce, token metadata
-- Blockscout deep links
-- Public project directory backed by server persistence
-- Project submission workflow
-- Admin approval/rejection panel at `/admin.html`
-- Admin key protected API
-- Health endpoint
-- Production environment variables
-- No private keys are stored or requested
+## What is real
+- Robinhood Chain mainnet configuration: chain ID 4663, ETH, Blockscout.
+- Server-side proxy to Robinhood's documented Stock Token APIs (`/rhj/assets`, `/rhj/prices/:symbol`, `/rhj/corporate-actions`).
+- Server-side JSON-RPC reads for chain health, block number, gas, address balance, code and nonce.
+- Browser EVM wallet connection using `window.ethereum` and `ethers`.
+- Project submissions persisted in SQLite, with admin approve/reject workflow protected by `ADMIN_KEY`.
+- Watchlist persisted in SQLite.
+- Bridge information is sourced from Robinhood's documented routes; the UI intentionally does not invent live quotes/fees.
 
 ## Run
 1. Install Node.js 20+.
-2. `npm install`
-3. Copy `.env.example` to `.env` and set a strong `ADMIN_KEY`.
-4. `npm start`
-5. Open `http://localhost:3000`
-6. Admin: `http://localhost:3000/admin.html`
+2. Copy `.env.example` to `.env` and change `ADMIN_KEY`.
+3. Run `npm install`.
+4. Run `npm start`.
+5. Open `http://localhost:3000`.
+6. Admin: `http://localhost:3000/admin.html`.
 
 ## Production
-Use a managed RPC provider instead of the public RPC, HTTPS, a real database (Postgres/Supabase), proper admin authentication/session cookies, rate limiting/WAF, and server-side secrets. The included JSON store is intentionally dependency-light for immediate deployment/testing.
+Use a dedicated RPC provider as recommended by Robinhood Chain documentation, put the app behind HTTPS, set a strong admin secret, add backups for the SQLite DB, and configure a real indexed-data provider such as Alchemy for richer wallet history/token balances.
 
-## Network
-Robinhood Chain mainnet: chain ID 4663, ETH, public RPC `https://rpc.mainnet.chain.robinhood.com`, explorer `https://robinhoodchain.blockscout.com`.
+This product is independent and not endorsed, sponsored or affiliated with Robinhood. It is not investment advice.
