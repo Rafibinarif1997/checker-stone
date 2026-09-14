@@ -1,11 +1,99 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rhoodstone Mission</title><meta name="description" content="The official mission hub for active Rhood Stone stakers."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body><div class="noise"></div>
-<header class="nav"><a class="brand" href="#top"><span class="mark">R</span><span>Rhoodstone <b>Mission</b></span></a><nav><a href="#projects">Missions</a><a href="#how">How it works</a><a href="#profile">Profile</a></nav><button class="btn outline" id="connectBtn">Connect Wallet <span>↗</span></button></header>
-<main id="top"><section class="hero"><div class="hero-copy"><div class="eyebrow"><i></i> STAKER-ONLY MISSION HUB</div><h1>Stake.<br><em>Complete.</em><br>Get selected.</h1><p>Connect the wallet holding your active Rhood Stone stake. Once verified, your mission access unlocks.</p><div class="actions"><a class="btn primary" href="#projects">View missions <span>↘</span></a><button class="btn ghost" id="heroConnect">Connect & verify <span>→</span></button></div><div class="hero-stats"><div><b>24H</b><span>PER CAMPAIGN</span></div><div><b>STAKER</b><span>ACCESS ONLY</span></div><div><b>GTD</b><span>RANDOM DRAW</span></div></div></div><div class="hero-art"><div class="halo"></div><div class="halo h2"></div><div class="stone">R</div><div class="float f1"><i></i><span>STAKE STATUS</span><strong id="heroStatus">LOCKED</strong></div><div class="float f2"><span>CAMPAIGN</span><strong>24 HOURS</strong></div></div></section>
-<section class="strip"><div><span>ACTIVE</span><b id="activeCount">00</b></div><div><span>ACCESS</span><b id="accessStat">LOCKED</b></div><div><span>GTD</span><b id="gtdStat">—</b></div><div><span>CHAIN</span><b>ROBINHOOD</b></div></section>
-<section class="section" id="projects"><div class="head"><div><div class="eyebrow">LIVE CAMPAIGNS</div><h2>Choose a mission.</h2><p>Only active 24-hour campaigns appear here.</p></div><div class="filters"><button class="active" data-filter="all">All</button><button data-filter="ending">Ending soon</button><button data-filter="new">New</button></div></div><div class="grid" id="projectGrid"></div></section>
-<section class="section how" id="how"><div class="eyebrow">THE FLOW</div><h2>One wallet.<br><em>One mission entry.</em></h2><div class="steps"><article><span>01</span><h3>Connect wallet</h3><p>Use the wallet associated with your Rhood Stone stake.</p></article><article><span>02</span><h3>Verify stake</h3><p>The staking contract is checked on Robinhood Chain.</p></article><article><span>03</span><h3>Complete mission</h3><p>Open each required task, finish it, then submit once.</p></article><article><span>04</span><h3>GTD draw</h3><p>Eligible submissions enter the project's server-side random draw.</p></article></div></section>
-<section class="profile-section section" id="profile"><div class="profile-card"><div class="profile-top"><div><div class="eyebrow">WALLET PROFILE</div><h2 id="profileTitle">Connect your wallet.</h2><p id="profileText">Your active Rhood Stone stake is the access key for this mission hub.</p></div><div class="profile-state" id="profileState">NOT CONNECTED</div></div><div id="profileBody" class="profile-body locked"><button class="btn primary" id="profileConnect">Connect & verify <span>→</span></button></div></div></section>
-<section class="cta"><div><div class="eyebrow">RHOO D STONE MISSION</div><h2>Ready when your stake is active.</h2></div><button class="btn primary" id="ctaConnect">Connect Wallet <span>↗</span></button></section></main><footer><span>Rhoodstone Mission</span><a href="admin.html">Admin</a><span>© 2026</span></footer>
-<div class="modal hidden" id="modal"><div class="modalbox"><button class="x" id="close">×</button><div class="eyebrow">STAKER VERIFICATION</div><h2>Unlock mission access.</h2><p>Connect your wallet. We will switch to Robinhood Chain if necessary and read the staking contract. No transaction and no signature are required.</p><button class="btn primary full" id="login">Connect & Check Stake <span>→</span></button><small id="modalMsg">Your wallet address is never used as a substitute for on-chain verification.</small></div></div>
-<div class="drawer hidden" id="missionDrawer"><div class="drawerbox"><button class="x" id="closeDrawer">×</button><div id="drawerContent"></div></div></div>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.15.0/dist/ethers.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RH//HUB — Robinhood Chain Intelligence</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="scanlines"></div>
+<header class="topbar">
+  <a class="brand" href="#home"><span class="brand-mark">RH</span><span>RH//HUB</span></a>
+  <nav>
+    <a href="#explore">EXPLORE</a><a href="#scanner">SCANNER</a><a href="#portfolio">PORTFOLIO</a>
+    <a href="#projects">PROJECTS</a><a href="#activity">ACTIVITY</a>
+  </nav>
+  <button class="wallet-btn" id="connectBtn">CONNECT WALLET</button>
+</header>
+
+<main>
+<section id="home" class="hero section">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="dot"></span> ROBINHOOD CHAIN // MAINNET 4663</div>
+    <h1>THE PIXEL<br><span>COMMAND CENTER</span><br>FOR RH CHAIN.</h1>
+    <p>Discover tokens, inspect contracts, track wallets, explore projects and read on-chain activity — all in one retro terminal.</p>
+    <div class="hero-actions"><a class="btn primary" href="#explore">OPEN TERMINAL →</a><a class="btn" href="#scanner">SCAN CONTRACT</a></div>
+  </div>
+  <div class="terminal-card">
+    <div class="terminal-head"><span>RH//LIVE_FEED</span><span>● ONLINE</span></div>
+    <div id="terminalFeed" class="terminal-feed"></div>
+    <div class="terminal-cursor">_</div>
+  </div>
+</section>
+
+<section class="ticker"><div id="ticker"></div></section>
+
+<section id="explore" class="section">
+  <div class="section-head"><div><span class="eyebrow">01 // DISCOVERY</span><h2>MARKET RADAR</h2></div><button class="filter active">ALL ASSETS</button></div>
+  <div class="stats-grid">
+    <div class="stat"><small>CHAIN ID</small><strong>4663</strong><span>ETH / MAINNET</span></div>
+    <div class="stat"><small>NETWORK</small><strong>ONLINE</strong><span class="up">● HEALTHY</span></div>
+    <div class="stat"><small>GAS TOKEN</small><strong>ETH</strong><span>REAL-TIME</span></div>
+    <div class="stat"><small>MODE</small><strong>PERMISSIONLESS</strong><span>EVM COMPATIBLE</span></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><span>TRENDING TOKENS</span><span>24H CHANGE</span></div>
+    <div id="tokenList"></div>
+  </div>
+</section>
+
+<section id="scanner" class="section split">
+  <div>
+    <span class="eyebrow">02 // SECURITY</span><h2>CONTRACT<br>SCANNER</h2>
+    <p>Paste a Robinhood Chain contract address. The demo UI checks format and presents a risk-oriented inspection workflow.</p>
+    <div class="scanner-box">
+      <input id="addressInput" placeholder="0x CONTRACT ADDRESS..." maxlength="42">
+      <button class="btn primary" id="scanBtn">SCAN →</button>
+    </div>
+    <div class="tiny">NO PRIVATE KEYS. READ-ONLY INSPECTION.</div>
+  </div>
+  <div class="scan-result" id="scanResult">
+    <div class="result-empty">AWAITING CONTRACT<br><span>PASTE ADDRESS TO BEGIN</span></div>
+  </div>
+</section>
+
+<section id="portfolio" class="section">
+  <div class="section-head"><div><span class="eyebrow">03 // WALLET INTELLIGENCE</span><h2>PORTFOLIO TERMINAL</h2></div></div>
+  <div class="portfolio-grid">
+    <div class="balance panel"><small>EST. PORTFOLIO VALUE</small><strong id="balance">$0.00</strong><span>CONNECT WALLET TO LOAD</span><button class="btn primary" id="portfolioConnect">CONNECT</button></div>
+    <div class="panel"><div class="panel-title">ALLOCATION</div><div class="bars"><i style="width:58%"><b>ETH 58%</b></i><i style="width:25%"><b>RWA 25%</b></i><i style="width:17%"><b>OTHER 17%</b></i></div></div>
+    <div class="panel"><div class="panel-title">RECENT ACTIVITY</div><div id="recentActivity"></div></div>
+  </div>
+</section>
+
+<section id="projects" class="section">
+  <div class="section-head"><div><span class="eyebrow">04 // ECOSYSTEM</span><h2>PROJECT DIRECTORY</h2></div><button class="btn primary" id="submitProject">+ SUBMIT PROJECT</button></div>
+  <div class="project-grid" id="projectGrid"></div>
+</section>
+
+<section id="activity" class="section">
+  <div class="section-head"><div><span class="eyebrow">05 // NETWORK</span><h2>LIVE ACTIVITY</h2></div></div>
+  <div class="panel activity-panel"><div class="panel-title"><span>BLOCK STREAM</span><span>BLOCKSCOUT</span></div><div id="activityList"></div></div>
+</section>
+
+<section class="section build">
+  <div><span class="eyebrow">BUILD ON RH CHAIN</span><h2>YOUR PROJECT<br>DESERVES A PLACE.</h2><p>Submit a token, NFT, DeFi app or developer tool. Approved projects can appear in the public directory.</p></div>
+  <button class="btn primary" id="submitProject2">SUBMIT YOUR PROJECT →</button>
+</section>
+</main>
+
+<footer><span>RH//HUB © 2026</span><span>NOT FINANCIAL ADVICE · READ-ONLY DEMO</span><a href="https://robinhoodchain.blockscout.com/" target="_blank">BLOCKSCOUT ↗</a></footer>
+
+<div class="modal" id="projectModal">
+ <div class="modal-box"><button class="close" id="closeModal">×</button><span class="eyebrow">PROJECT SUBMISSION</span><h2>LIST YOUR PROJECT</h2>
+ <form id="projectForm"><input required placeholder="PROJECT NAME"><input required placeholder="CONTRACT ADDRESS"><select><option>Token</option><option>NFT</option><option>DeFi</option><option>Tool</option><option>Other</option></select><input placeholder="WEBSITE / X / DISCORD"><textarea placeholder="SHORT DESCRIPTION"></textarea><button class="btn primary" type="submit">SEND FOR REVIEW →</button></form><p class="tiny">ADMIN APPROVAL REQUIRED BEFORE PUBLICATION.</p></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

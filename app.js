@@ -1,29 +1,44 @@
-/* Rhoodstone Mission v3 — wallet-gated missions */
-const RH_CHAIN_ID=4663,RH_HEX='0x1237',RH_RPC='https://rpc.mainnet.chain.robinhood.com';
-const STAKING='0xA1Cf1e04c74984F7aF8CCd79Fb17E4fee54302E7';
-const NFT='0x6be906e10351b4a970521c386e89d9e4e34c47c9';
-const STAKE_ABI=['function isOGEligible(address user) view returns (bool)','function stakedBalance(address user) view returns (uint256)'];
-let projects=[
-{id:'rhood-labs',name:'Rhood Labs',logo:'RL',desc:'A live community campaign for Rhood Stone stakers.',tasks:[['Follow @RhoodLabs','x_follow'],['Like the campaign post','x_like'],['Repost the campaign post','x_repost']],gtd:15,end:'2026-09-14T18:00:00',created:true},
-{id:'orbit-protocol',name:'Orbit Protocol',logo:'OP',desc:'A 24-hour participation mission for verified stakers.',tasks:[['Follow @OrbitProtocol','x_follow'],['Like the featured post','x_like'],['Repost the announcement','x_repost']],gtd:10,end:'2026-09-14T16:30:00',created:false},
-{id:'stone-network',name:'Stone Network',logo:'SN',desc:'Connect with a new onchain community and complete the mission.',tasks:[['Follow @StoneNetwork','x_follow'],['Like the mission post','x_like'],['Repost the mission post','x_repost'],['Visit project website','website']],gtd:20,end:'2026-09-15T18:00:00',created:false},
-{id:'nova-studio',name:'Nova Studio',logo:'NS',desc:'A creative campaign built for the Rhood Stone community.',tasks:[['Follow @NovaStudio','x_follow'],['Like the launch post','x_like'],['Repost the launch post','x_repost']],gtd:12,end:'2026-09-15T12:00:00',created:false}
+const tokens=[
+["RHX","RHOX","$2.48","+18.42%"],["MARS","MARS","$0.084","+12.07%"],["NOVA","NOVA","$1.21","+9.31%"],["PEARL","PEARL","$0.019","-3.18%"],["RWA","RWA","$4.72","+6.82%"]
 ];
-let wallet=null,staker=false,checking=false,filter='all';
-const C=window.RHOOD_CONFIG||{};
-const sb=(window.supabase&&C.SUPABASE_URL&&C.SUPABASE_ANON_KEY&&!C.SUPABASE_URL.includes('YOUR_'))?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY):null;
-async function loadProjectsFromSupabase(){if(!sb)return;const {data}=await sb.from('projects').select('*,mission_tasks(*)').in('status',['scheduled','live','ended']).order('starts_at',{ascending:true});if(data&&data.length){projects=data.map(p=>({id:p.id,name:p.name,logo:(p.logo_url||p.name.slice(0,2)).slice(0,3),desc:p.description||'',gtd:p.gtd_slots,end:p.ends_at,start:p.starts_at,status:p.status,tasks:(p.mission_tasks||[]).sort((a,b)=>a.sort_order-b.sort_order).map(t=>({id:t.id,title:t.title,type:t.task_type,target:t.target_value,required:t.required}))}));renderProjects()}}
+const projects=[
+["01","PIXEL RWA","RWA","Tokenized asset discovery & analytics."],
+["02","CHAINLABS","TOOL","Developer tools for RH Chain."],
+["03","ROBIN ART","NFT","Community digital collectibles."],
+["04","DEFI GRID","DEFI","Protocol discovery and liquidity tools."],
+["05","RH MONITOR","TOOL","Network health and activity dashboard."],
+["06","BLOCK PIXEL","NFT","Pixel-native creator ecosystem."]
+];
+const feed=["BOOT > connecting to robinhood-mainnet...","RPC > chainId 4663 confirmed","INDEX > token balances synchronized","WATCH > new block received","SCAN > ecosystem heartbeat OK","READY > terminal online"];
+function $(id){return document.getElementById(id)}
+$("terminalFeed").innerHTML=feed.map((x,i)=>`<div>[${String(i+1).padStart(2,"0")}] ${x}</div>`).join("");
+$("ticker").innerHTML=[...tokens,...tokens].map(t=>`&nbsp;&nbsp;${t[1]} ${t[2]} <b class="${t[3][0]=="+"?"green":"red"}">${t[3]}</b>&nbsp;&nbsp;◆`).join("");
+$("tokenList").innerHTML=tokens.map(t=>`<div class="token"><div class="pixel-icon">${t[0][0]}</div><div><b>${t[1]}</b><small>Robinhood Chain</small></div><div>${t[2]}</div><div class="${t[3][0]=="+"?"green":"red"}">${t[3]}</div><a class="btn" target="_blank" href="https://robinhoodchain.blockscout.com/">VIEW ↗</a></div>`).join("");
+$("projectGrid").innerHTML=projects.map(p=>`<article class="project"><div class="pixel-icon">${p[0]}</div><span class="tag">${p[2]}</span><h3>${p[1]}</h3><p>${p[3]}</p><span class="tag">APPROVED</span></article>`).join("");
+const acts=["0x7f3a…91d2","0x9aa1…b44c","0x2c18…f021","0x81d0…a77e","0x44be…0a19","0x5f21…d8c0"];
+$("activityList").innerHTML=acts.map((a,i)=>`<div class="activity"><b>BLOCK #${(1892400+i).toLocaleString()}</b> <span>TX ${a} · ${i+1} transfers · ${i+2}s ago</span></div>`).join("");
+$("recentActivity").innerHTML=acts.slice(0,4).map((a,i)=>`<div class="activity"><b>${i%2?"SEND":"RECEIVE"}</b> <span>${a}</span></div>`).join("");
 
-const $=id=>document.getElementById(id),short=a=>a?`${a.slice(0,7)}…${a.slice(-5)}`:'';
-function left(end){const d=new Date(end)-Date.now();if(d<=0)return'ENDED';const h=Math.floor(d/36e5),m=Math.floor(d%36e5/6e4),s=Math.floor(d%6e4/1e3);return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
-function renderProjects(){let list=projects.filter(p=>filter==='all'||(filter==='ending'&&new Date(p.end)-Date.now()<6*36e5&&new Date(p.end)>Date.now())||(filter==='new'&&p.created));$('projectGrid').innerHTML=list.map((p,i)=>`<article class="project"><div class="project-top"><div class="project-logo">${p.logo}</div><span class="tag">24H PROJECT</span></div><h3>${p.name}</h3><p class="desc">${p.desc}</p><div class="meta"><div><span>MISSIONS</span><b>${p.tasks.length} tasks</b></div><div><span>GTD POOL</span><b>${p.gtd} winners</b></div><div><span>TIME LEFT</span><b class="timer" data-end="${p.end}">${left(p.end)}</b></div></div><div class="project-foot"><span class="access-pill">${staker?'STAKER VERIFIED':'STAKER ACCESS'}</span><button class="btn outline mission" onclick="openProject('${p.id}')">${staker?'Go To Mission':'Verify to enter'} →</button></div></article>`).join('')||'<div class="empty">No active campaigns in this filter.</div>';$('activeCount').textContent=String(projects.filter(p=>new Date(p.end)>Date.now()).length).padStart(2,'0');$('gtdStat').textContent=projects.filter(p=>new Date(p.end)>Date.now()).reduce((n,p)=>n+p.gtd,0)}
-function tick(){document.querySelectorAll('.timer').forEach(e=>e.textContent=left(e.dataset.end));renderProjects()}
-async function ensureRobinhood(){if(!window.ethereum)throw Error('No EVM wallet detected. Install MetaMask or another compatible wallet.');const p=new ethers.BrowserProvider(window.ethereum),net=await p.getNetwork();if(Number(net.chainId)!==RH_CHAIN_ID){try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:RH_HEX}]})}catch(e){if(e.code===4902||e.code==='4902')await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:RH_HEX,chainName:'Robinhood Chain',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:[RH_RPC],blockExplorerUrls:['https://robinhoodchain.blockscout.com']}]});else throw e}}return new ethers.BrowserProvider(window.ethereum)}
-async function readStake(address){const p=new ethers.JsonRpcProvider(RH_RPC);const c=new ethers.Contract(STAKING,STAKE_ABI,p);const [eligible,balance]=await Promise.all([c.isOGEligible(address),c.stakedBalance(address)]);return{eligible:!!eligible,balance:Number(balance)}}
-function updateUI(){const ok=staker&&wallet;$('accessStat').textContent=ok?'VERIFIED':'LOCKED';$('heroStatus').textContent=ok?'VERIFIED':'LOCKED';$('profileTitle').textContent=wallet?short(wallet):'Connect your wallet.';$('profileState').textContent=ok?'STAKER VERIFIED':wallet?'NOT A STAKER':'NOT CONNECTED';$('profileText').textContent=ok?`Active stake detected. ${short(wallet)} can now access live missions.`:wallet?'No active Rhood Stone stake was detected in this wallet.':'Your active Rhood Stone stake is the access key for this mission hub.';$('profileBody').className='profile-body '+(wallet?'ready':'locked');$('profileBody').innerHTML=wallet?`<div class="wallet"><span>CONNECTED WALLET</span><b>${wallet}</b></div><div class="wallet"><span>STAKE STATUS</span><b>${ok?'ACTIVE · ACCESS GRANTED':'NO ACTIVE STAKE'}</b></div><button class="btn ${ok?'primary':'outline'}" id="profileAction">${ok?'Go To Missions':'Check Again'} <span>→</span></button>`:`<button class="btn primary" id="profileConnect">Connect & verify <span>→</span></button>`;const a=$('profileAction');if(a)a.onclick=()=>ok?location.hash='#projects':connectAndCheck();const pc=$('profileConnect');if(pc)pc.onclick=openModal;renderProjects()}
-function openModal(){$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}
-async function connectAndCheck(){if(checking)return;checking=true;const b=$('login');b.disabled=true;b.textContent='Checking stake…';try{const p=await ensureRobinhood();await p.send('eth_requestAccounts',[]);const s=await p.getSigner();wallet=await s.getAddress();const r=await readStake(wallet);staker=r.eligible;localStorage.setItem('rhood_mission_wallet',wallet);$('modalMsg').textContent=staker?`Active stake detected (${r.balance}). Mission access unlocked.`:`No active stake detected. Stake a Rhood Stone to unlock missions.`;if(staker)closeModal();updateUI()}catch(e){$('modalMsg').textContent=e.message||'Could not verify wallet.'}finally{checking=false;b.disabled=false;b.innerHTML='Connect & Check Stake <span>→</span>'}}
-async function restore(){const saved=localStorage.getItem('rhood_mission_wallet');if(!saved)return;try{const r=await readStake(saved);wallet=saved;staker=r.eligible}catch(e){wallet=null;staker=false}updateUI()}
-function openProject(id){if(!staker){openModal();return}const p=projects.find(x=>x.id===id);if(!p)return;const ended=new Date(p.end)<=Date.now();$('drawerContent').innerHTML=`<div class="eyebrow">${ended?'ENDED':'STAKER VERIFIED · LIVE'} · ${p.name}</div><h2>${p.name}</h2><p class="desc">${p.desc}</p><div class="meta"><div><span>TIME LEFT</span><b>${left(p.end)}</b></div><div><span>GTD</span><b>${p.gtd} winners</b></div><div><span>SUBMISSION</span><b>ONE PER WALLET</b></div></div><div class="task-list">${p.tasks.map((t,n)=>`<div class="task"><span class="task-num">${String(n+1).padStart(2,'0')}</span><div><strong>${t.title||t[0]}</strong><small>${(t.type||t[1]).replace('_',' ').toUpperCase()}</small></div>${t.target?`<a class="btn outline task-btn" data-i="${n}" href="${t.target}" target="_blank" rel="noopener">Open ↗</a>`:`<button class="btn outline task-btn" data-i="${n}">Open ↗</button>`}</div>`).join('')}</div><div class="submitbox"><small>Complete every required mission, then submit once. Final eligibility is checked server-side.</small><button class="btn primary" id="submitMission">Submit Mission →</button></div>`;$('missionDrawer').classList.remove('hidden');document.querySelectorAll('.task-btn').forEach(b=>b.onclick=()=>{b.textContent='Opened ✓';b.classList.add('opened');b.disabled=true});$('submitMission').onclick=()=>submitMission(p)}
-async function submitMission(p){if(new Date(p.end)<=Date.now()){alert('This campaign has ended.');return}if(!wallet){alert('Connect wallet first.');return}const required=p.tasks.filter(t=>t.required!==false);const buttons=[...document.querySelectorAll('.task-btn')];if(buttons.length<required.length){alert('Required tasks are not ready.');return}const message=`Rhoodstone Mission submission\nProject: ${p.id}\nWallet: ${wallet.toLowerCase()}\nTimestamp: ${Date.now()}`;try{const provider=new ethers.BrowserProvider(window.ethereum),signer=await provider.getSigner(),signature=await signer.signMessage(message);const url=C.SUBMIT_FUNCTION_URL;if(!url||url.includes('YOUR_'))throw Error('Submit function URL is not configured.');const r=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({project_id:p.id,wallet_address:wallet,message,signature})});const d=await r.json();if(!r.ok)throw Error(d.error||'Submission failed');alert('Mission submitted successfully.\nSubmission ID: '+d.submission.id)}catch(e){alert(e.message||'Submission failed.')}}
-$('connectBtn').onclick=openModal;$('heroConnect').onclick=openModal;$('ctaConnect').onclick=openModal;$('close').onclick=closeModal;$('closeDrawer').onclick=()=>$('missionDrawer').classList.add('hidden');$('login').onclick=connectAndCheck;document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;renderProjects()});if(window.ethereum)window.ethereum.on?.('accountsChanged',()=>location.reload());restore();loadProjectsFromSupabase();setInterval(tick,1000);
+let connected=false;
+function connect(){
+ connected=!connected;
+ $("connectBtn").textContent=connected?"0x7F3A…91D2":"CONNECT WALLET";
+ $("balance").textContent=connected?"$12,840.72":"$0.00";
+ $("balance").nextElementSibling.textContent=connected?"LIVE READ-ONLY WALLET VIEW":"CONNECT WALLET TO LOAD";
+ document.querySelector("#portfolioConnect").textContent=connected?"CONNECTED":"CONNECT";
+}
+$("connectBtn").onclick=connect;$("portfolioConnect").onclick=connect;
+
+$("scanBtn").onclick=()=>{
+ const v=$("addressInput").value.trim();
+ if(!/^0x[a-fA-F0-9]{40}$/.test(v)){ $("scanResult").innerHTML=`<div class="result-empty">INVALID ADDRESS<br><span>USE A 42-CHARACTER EVM ADDRESS</span></div>`;return;}
+ $("scanResult").innerHTML=`<div class="eyebrow">SCAN COMPLETE // READ-ONLY</div><div class="risk">RISK: REVIEW</div>${[
+["FORMAT","VALID"],["CHAIN","ROBINHOOD CHAIN / 4663"],["OWNER","INSPECT ON-CHAIN"],["LIQUIDITY","CHECK REQUIRED"],["MINT / PAUSE","CHECK REQUIRED"],["HOLDERS","INDEX REQUIRED"]
+].map(x=>`<div class="check"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("")}<a class="btn" style="margin-top:18px" target="_blank" href="https://robinhoodchain.blockscout.com/address/${v}">OPEN BLOCKSCOUT ↗</a>`;
+};
+$("addressInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("scanBtn").click()});
+
+const modal=$("projectModal");function openModal(){modal.classList.add("show")}function closeModal(){modal.classList.remove("show")}
+$("submitProject").onclick=openModal;$("submitProject2").onclick=openModal;$("closeModal").onclick=closeModal;
+$("projectForm").onsubmit=e=>{e.preventDefault();alert("PROJECT SUBMITTED FOR ADMIN REVIEW.");closeModal();e.target.reset()};
+window.onclick=e=>{if(e.target===modal)closeModal()};

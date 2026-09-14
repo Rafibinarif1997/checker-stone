@@ -1,25 +1,27 @@
-# Rhoodstone Mission v2 — Wallet + Staker Gate
+# RH//HUB — Robinhood Chain Pixel Command Center
 
-This version replaces X login with an EVM wallet gate.
+A standalone, pixel/terminal-style front-end prototype for a Robinhood Chain ecosystem hub.
 
-## Network
-- Robinhood Chain mainnet
-- Chain ID: `4663`
-- Public RPC: `https://rpc.mainnet.chain.robinhood.com`
-- Explorer: `https://robinhoodchain.blockscout.com`
+## Included
+- Responsive pixel UI
+- Market Radar / token directory
+- Contract scanner workflow
+- Wallet connection demo state
+- Portfolio terminal
+- Project directory
+- Project submission modal
+- Live activity mock feed
+- Blockscout links
+- Robinhood Chain mainnet constants: Chain ID 4663, ETH gas
+- No private keys or signing
 
-## Contracts
-- Rhood Stone NFT: `0x6be906e10351b4a970521c386e89d9e4e34c47c9`
-- Staking: `0xA1Cf1e04c74984F7aF8CCd79Fb17E4fee54302E7`
+## Run
+Open `index.html` in a browser.
 
-The staking contract exposes `isOGEligible(address)` and `stakedBalance(address)`. The site uses `isOGEligible` as the source of truth: 1+ currently staked Stone means eligible. During the 7-day unstake cooldown, the contract still reports the wallet as eligible.
-
-## User flow
-1. Connect EVM wallet.
-2. Switch/add Robinhood Chain if necessary.
-3. Read the staking contract.
-4. If eligible, show **STAKER VERIFIED** and **Go To Mission**.
-5. If not eligible, block Mission access.
-
-## Important
-The current mission submission inside this prototype is still a demo UI. For production, the Supabase Edge Function must re-check `isOGEligible(user_wallet)` server-side before accepting a submission. Never trust a browser-only eligibility flag.
+## Production next steps
+1. Replace mock token/activity data with an indexed data provider.
+2. Add real EVM wallet connection (e.g. injected wallet / WalletConnect).
+3. Add a backend + database for project submissions and admin approval.
+4. Add contract ABI/source verification and token-holder analytics.
+5. Add authentication and moderation/risk policies.
+6. Keep API keys server-side; never ship provider secrets in browser code.
