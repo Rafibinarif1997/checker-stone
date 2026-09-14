@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RH//HUB — Robinhood Chain Intelligence</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="scanlines"></div>
+<header class="topbar">
+  <a class="brand" href="#home"><span class="brand-mark">RH</span><span>RH//HUB</span></a>
+  <nav>
+    <a href="#explore">EXPLORE</a><a href="#scanner">SCANNER</a><a href="#portfolio">PORTFOLIO</a>
+    <a href="#projects">PROJECTS</a><a href="#activity">ACTIVITY</a>
+  </nav>
+  <button class="wallet-btn" id="connectBtn">CONNECT WALLET</button>
+</header>
+
+<main>
+<section id="home" class="hero section">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="dot"></span> ROBINHOOD CHAIN // MAINNET 4663</div>
+    <h1>THE PIXEL<br><span>COMMAND CENTER</span><br>FOR RH CHAIN.</h1>
+    <p>Discover tokens, inspect contracts, track wallets, explore projects and read on-chain activity — all in one retro terminal.</p>
+    <div class="hero-actions"><a class="btn primary" href="#explore">OPEN TERMINAL →</a><a class="btn" href="#scanner">SCAN CONTRACT</a></div>
+  </div>
+  <div class="terminal-card">
+    <div class="terminal-head"><span>RH//LIVE_FEED</span><span>● ONLINE</span></div>
+    <div id="terminalFeed" class="terminal-feed"></div>
+    <div class="terminal-cursor">_</div>
+  </div>
+</section>
+
+<section class="ticker"><div id="ticker"></div></section>
+
+<section id="explore" class="section">
+  <div class="section-head"><div><span class="eyebrow">01 // DISCOVERY</span><h2>MARKET RADAR</h2></div><button class="filter active">ALL ASSETS</button></div>
+  <div class="stats-grid">
+    <div class="stat"><small>CHAIN ID</small><strong>4663</strong><span>ETH / MAINNET</span></div>
+    <div class="stat"><small>NETWORK</small><strong id="networkState">CONNECTING</strong><span id="gasValue">—</span></div>
+    <div class="stat"><small>GAS TOKEN</small><strong>ETH</strong><span id="gasValue2">REAL-TIME</span></div>
+    <div class="stat"><small>MODE</small><strong id="chainBlock">—</strong><span>LIVE BLOCK</span></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><span>TRENDING TOKENS</span><span>24H CHANGE</span></div>
+    <div id="tokenList"></div>
+  </div>
+</section>
+
+<section id="scanner" class="section split">
+  <div>
+    <span class="eyebrow">02 // SECURITY</span><h2>CONTRACT<br>SCANNER</h2>
+    <p>Paste a Robinhood Chain contract address. The demo UI checks format and presents a risk-oriented inspection workflow.</p>
+    <div class="scanner-box">
+      <input id="addressInput" placeholder="0x CONTRACT ADDRESS..." maxlength="42">
+      <button class="btn primary" id="scanBtn">SCAN →</button>
+    </div>
+    <div class="tiny">NO PRIVATE KEYS. READ-ONLY INSPECTION.</div>
+  </div>
+  <div class="scan-result" id="scanResult">
+    <div class="result-empty">AWAITING CONTRACT<br><span>PASTE ADDRESS TO BEGIN</span></div>
+  </div>
+</section>
+
+<section id="portfolio" class="section">
+  <div class="section-head"><div><span class="eyebrow">03 // WALLET INTELLIGENCE</span><h2>PORTFOLIO TERMINAL</h2></div></div>
+  <div class="portfolio-grid">
+    <div class="balance panel"><small>EST. PORTFOLIO VALUE</small><strong id="balance">0.0000 ETH</strong><span id="walletMeta">NOT CONNECTED</span><button class="btn primary" id="portfolioConnect">CONNECT</button></div>
+    <div class="panel"><div class="panel-title">WALLET <span id="walletAddress">NOT CONNECTED</span></div><div class="bars"><i style="width:58%"><b>ETH 58%</b></i><i style="width:25%"><b>RWA 25%</b></i><i style="width:17%"><b>OTHER 17%</b></i></div></div>
+    <div class="panel"><div class="panel-title">RECENT ACTIVITY</div><div id="recentActivity"></div></div>
+  </div>
+</section>
+
+<section id="projects" class="section">
+  <div class="section-head"><div><span class="eyebrow">04 // ECOSYSTEM</span><h2>PROJECT DIRECTORY</h2></div><button class="btn primary" id="submitProject">+ SUBMIT PROJECT</button></div>
+  <div class="project-grid" id="projectGrid"></div>
+</section>
+
+<section id="activity" class="section">
+  <div class="section-head"><div><span class="eyebrow">05 // NETWORK</span><h2>LIVE ACTIVITY</h2></div></div>
+  <div class="panel activity-panel"><div class="panel-title"><span>BLOCK STREAM</span><span>BLOCKSCOUT</span></div><div id="activityList"></div></div>
+</section>
+
+<section class="section build">
+  <div><span class="eyebrow">BUILD ON RH CHAIN</span><h2>YOUR PROJECT<br>DESERVES A PLACE.</h2><p>Submit a token, NFT, DeFi app or developer tool. Approved projects can appear in the public directory.</p></div>
+  <button class="btn primary" id="submitProject2">SUBMIT YOUR PROJECT →</button>
+</section>
+</main>
+
+<footer><span>RH//HUB © 2026</span><span>NOT FINANCIAL ADVICE · READ-ONLY DEMO</span><a href="https://robinhoodchain.blockscout.com/" target="_blank">BLOCKSCOUT ↗</a></footer>
+
+<div class="modal" id="projectModal">
+ <div class="modal-box"><button class="close" id="closeModal">×</button><span class="eyebrow">PROJECT SUBMISSION</span><h2>LIST YOUR PROJECT</h2>
+ <form id="projectForm"><input name="name" required placeholder="PROJECT NAME"><input name="address" required placeholder="CONTRACT ADDRESS"><select name="category"><option>Token</option><option>NFT</option><option>DeFi</option><option>Tool</option><option>Other</option></select><input name="link" placeholder="WEBSITE / X / DISCORD"><textarea name="description" placeholder="SHORT DESCRIPTION"></textarea><button class="btn primary" type="submit">SEND FOR REVIEW →</button></form><p class="tiny">ADMIN APPROVAL REQUIRED BEFORE PUBLICATION.</p></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

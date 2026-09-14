@@ -1,27 +1,32 @@
-# RH//HUB — Robinhood Chain Pixel Command Center
+# RH//HUB — Complete Pixel Website
 
-A standalone, pixel/terminal-style front-end prototype for a Robinhood Chain ecosystem hub.
+This is the consolidated final build. It is a single deployable Node/Express application, not a collection of partial ZIPs.
 
 ## Included
-- Responsive pixel UI
-- Market Radar / token directory
-- Contract scanner workflow
-- Wallet connection demo state
-- Portfolio terminal
-- Project directory
-- Project submission modal
-- Live activity mock feed
-- Blockscout links
-- Robinhood Chain mainnet constants: Chain ID 4663, ETH gas
-- No private keys or signing
+- Pixel/retro full responsive UI
+- Live Robinhood Chain RPC health, block and gas reads
+- EVM wallet connect + automatic network add/switch
+- Read-only wallet balance
+- Live contract scanner: contract/EOA, bytecode size, ETH balance, nonce, token metadata
+- Blockscout deep links
+- Public project directory backed by server persistence
+- Project submission workflow
+- Admin approval/rejection panel at `/admin.html`
+- Admin key protected API
+- Health endpoint
+- Production environment variables
+- No private keys are stored or requested
 
 ## Run
-Open `index.html` in a browser.
+1. Install Node.js 20+.
+2. `npm install`
+3. Copy `.env.example` to `.env` and set a strong `ADMIN_KEY`.
+4. `npm start`
+5. Open `http://localhost:3000`
+6. Admin: `http://localhost:3000/admin.html`
 
-## Production next steps
-1. Replace mock token/activity data with an indexed data provider.
-2. Add real EVM wallet connection (e.g. injected wallet / WalletConnect).
-3. Add a backend + database for project submissions and admin approval.
-4. Add contract ABI/source verification and token-holder analytics.
-5. Add authentication and moderation/risk policies.
-6. Keep API keys server-side; never ship provider secrets in browser code.
+## Production
+Use a managed RPC provider instead of the public RPC, HTTPS, a real database (Postgres/Supabase), proper admin authentication/session cookies, rate limiting/WAF, and server-side secrets. The included JSON store is intentionally dependency-light for immediate deployment/testing.
+
+## Network
+Robinhood Chain mainnet: chain ID 4663, ETH, public RPC `https://rpc.mainnet.chain.robinhood.com`, explorer `https://robinhoodchain.blockscout.com`.
