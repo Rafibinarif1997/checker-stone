@@ -1,14 +1,68 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Robinhood Chain Copilot</title><link rel="stylesheet" href="app.css"></head><body>
-<div class="crt"></div><header><a class="logo" href="#top"><b>RH</b><span>COPILOT</span></a><nav><a href="#dashboard">DASHBOARD</a><a href="#stocks">STOCK TOKENS</a><a href="#defi">DEFI</a><a href="#bridge">BRIDGE</a><a href="#scanner">SCANNER</a><a href="#discover">DISCOVER</a></nav><button id="connect" class="pixel-btn">CONNECT WALLET</button></header>
-<main id="top"><section class="hero"><div><p class="kicker">INDEPENDENT FINANCIAL INTELLIGENCE // ROBINHOOD CHAIN</p><h1>KNOW YOUR<br><em>ONCHAIN</em><br>OPTIONS.</h1><p class="lede">Portfolio intelligence, Stock Token discovery, DeFi opportunities, bridge intelligence and contract research — built for Robinhood Chain users.</p><div class="actions"><a class="pixel-btn hot" href="#dashboard">ENTER TERMINAL →</a><a class="pixel-btn" href="#scanner">SCAN CONTRACT</a></div></div><div class="hero-terminal"><div class="term-head">RH//SYSTEM <span id="statusDot">● ONLINE</span></div><div id="boot"></div><div class="prompt">root@copilot:~$ <span>_</span></div></div></section>
-<section class="ticker"><div id="ticker">LOADING MARKET DATA...</div></section>
-<section id="dashboard" class="section"><div class="section-title"><div><span class="kicker">01 // MY MONEY</span><h2>PORTFOLIO INTELLIGENCE</h2></div><span id="walletAddr" class="muted">WALLET NOT CONNECTED</span></div><div class="dashboard-grid"><div class="big-card"><span>PORTFOLIO</span><strong id="totalValue">$—</strong><small id="portfolioNote">CONNECT A WALLET TO READ ONCHAIN BALANCE.</small><button id="refreshWallet" class="pixel-btn">REFRESH</button></div><div class="data-card"><h3>NETWORK</h3><div class="metric"><span>CHAIN ID</span><b>4663</b></div><div class="metric"><span>BLOCK</span><b id="block">—</b></div><div class="metric"><span>GAS</span><b id="gas">—</b></div><div class="metric"><span>STATUS</span><b class="good" id="health">CHECKING</b></div></div><div class="data-card"><h3>YOUR ASSETS</h3><div id="assetMini" class="empty">Connect wallet to load indexed assets.</div></div></div></section>
-<section id="stocks" class="section"><div class="section-title"><div><span class="kicker">02 // REAL-WORLD ASSETS</span><h2>STOCK TOKEN TERMINAL</h2></div><input id="stockSearch" class="search" placeholder="SEARCH TICKER..."></div><div class="stock-layout"><div class="data-card stock-list" id="stockList">LOADING STOCK TOKENS...</div><div class="data-card stock-detail" id="stockDetail"><div class="empty">SELECT AN ASSET.</div></div></div></section>
-<section id="defi" class="section"><div class="section-title"><div><span class="kicker">03 // OPPORTUNITIES</span><h2>WHAT CAN YOUR ASSET DO?</h2></div></div><div class="op-grid"><article><span class="num">01</span><h3>LENDING</h3><p>Discover lending markets where supported Stock Tokens or other assets may be usable as supply or collateral.</p><span class="tag">DATA-DRIVEN</span></article><article><span class="num">02</span><h3>LIQUIDITY</h3><p>Compare supported pools and inspect liquidity, volume and contract details before interacting.</p><span class="tag">NO FAKE APY</span></article><article><span class="num">03</span><h3>SWAP ROUTING</h3><p>Prepare for best-route execution without hiding slippage, fees or protocol risk.</p><span class="tag">ROUTE LAYER</span></article></div><div class="notice">LIVE PROTOCOL APYs and executable quotes are only shown after a verified provider integration is configured. We never invent yield numbers.</div></section>
-<section id="bridge" class="section"><div class="section-title"><div><span class="kicker">04 // MOVE CAPITAL</span><h2>BRIDGE INTELLIGENCE</h2></div></div><div class="bridge-grid" id="bridgeGrid"></div></section>
-<section id="scanner" class="section"><div class="section-title"><div><span class="kicker">05 // SECURITY RESEARCH</span><h2>CONTRACT INTELLIGENCE</h2></div></div><div class="scanner"><div class="scanner-input"><input id="scanInput" placeholder="0x CONTRACT OR WALLET ADDRESS"><button id="scan" class="pixel-btn hot">SCAN →</button><p class="muted">Read-only technical inspection. Not investment advice.</p></div><div id="scanResult" class="scan-result"><div class="empty">PASTE AN ADDRESS TO START.</div></div></div></section>
-<section id="discover" class="section"><div class="section-title"><div><span class="kicker">06 // ECOSYSTEM</span><h2>DISCOVER</h2></div><button id="submitBtn" class="pixel-btn hot">+ SUBMIT PROJECT</button></div><div id="projects" class="project-grid">LOADING...</div></section>
-<section class="section final-cta"><span class="kicker">BUILD WITH PURPOSE</span><h2>THE INTERFACE FOR<br>ROBINHOOD CHAIN FINANCE.</h2><p>Independent, non-custodial and transparent by design.</p></section></main>
-<footer><span>RH//COPILOT · 2026</span><span>INDEPENDENT · NON-CUSTODIAL · NOT FINANCIAL ADVICE</span><a target="_blank" href="https://robinhoodchain.blockscout.com/">BLOCKSCOUT ↗</a></footer>
-<div id="modal" class="modal"><div class="modal-box"><button class="x" id="close">×</button><span class="kicker">PROJECT SUBMISSION</span><h2>LIST YOUR PROJECT</h2><form id="projectForm"><input name="name" required placeholder="PROJECT NAME"><select name="category"><option>DEFI</option><option>RWA</option><option>TOOL</option><option>NFT</option><option>INFRA</option><option>OTHER</option></select><input name="contract" placeholder="CONTRACT ADDRESS (OPTIONAL)"><input name="website" placeholder="WEBSITE / DOCS"><textarea name="description" required maxlength="500" placeholder="WHAT DOES IT DO?"></textarea><button class="pixel-btn hot">SUBMIT FOR REVIEW →</button></form></div></div>
-<script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Robinhood Chain Copilot — independent onchain portfolio and ecosystem intelligence.">
+<title>RH//COPILOT — Robinhood Chain Intelligence</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="scanlines"></div>
+<header class="site-header">
+  <a class="brand" href="#top"><span class="brand-box">RH</span><span>CO<span class="accent">PILOT</span></span></a>
+  <nav id="nav"><a href="#dashboard">Dashboard</a><a href="#stocks">Stock Tokens</a><a href="#defi">DeFi</a><a href="#bridge">Bridge</a><a href="#scanner">Scanner</a><a href="#discover">Discover</a></nav>
+  <button id="connect" class="btn primary">Connect Wallet</button>
+  <button id="menu" class="menu" aria-label="Menu">☰</button>
+</header>
+
+<main id="top">
+<section class="hero wrap">
+  <div class="hero-copy">
+    <div class="eyebrow">INDEPENDENT FINANCIAL INTELLIGENCE // ROBINHOOD CHAIN</div>
+    <h1>KNOW YOUR<br><span>ONCHAIN</span><br>OPTIONS.</h1>
+    <p>One interface for wallet intelligence, Stock Tokens, DeFi discovery, bridge research, contract inspection and ecosystem projects.</p>
+    <div class="hero-actions"><a class="btn primary" href="#dashboard">Enter Terminal ↓</a><button class="btn" id="heroScan">Scan Contract</button></div>
+    <div class="disclaimer">NOT OFFICIAL / NOT ENDORSED BY ROBINHOOD · NON-CUSTODIAL · NOT FINANCIAL ADVICE</div>
+  </div>
+  <div class="terminal card"><div class="terminal-head"><span>RH//SYSTEM</span><span id="systemStatus">● CHECKING</span></div><div id="boot"></div><div class="terminal-input">root@copilot:~$ <span class="cursor">_</span></div></div>
+</section>
+
+<section class="ticker"><div id="ticker">LOADING STOCK TOKEN REGISTRY…</div></section>
+
+<section id="dashboard" class="section wrap">
+ <div class="section-head"><div><div class="eyebrow">01 // MY MONEY</div><h2>PORTFOLIO INTELLIGENCE</h2></div><div id="walletAddr" class="status">WALLET NOT CONNECTED</div></div>
+ <div class="grid dashboard-grid">
+  <article class="card balance-card"><div class="label">NATIVE BALANCE</div><div id="totalValue" class="big-number">— ETH</div><div id="portfolioNote" class="muted">Connect an EVM wallet to read your Robinhood Chain balance.</div><button id="refreshWallet" class="btn">↻ Refresh Wallet</button></article>
+  <article class="card"><h3>NETWORK</h3><div class="rows"><div><span>CHAIN ID</span><b>4663</b></div><div><span>BLOCK</span><b id="block">—</b></div><div><span>GAS</span><b id="gas">—</b></div><div><span>RPC</span><b id="health">CHECKING</b></div></div></article>
+  <article class="card"><h3>WALLET DATA</h3><div id="assetMini" class="empty">No wallet connected.</div></article>
+ </div>
+</section>
+
+<section id="stocks" class="section wrap">
+ <div class="section-head"><div><div class="eyebrow">02 // REAL-WORLD ASSETS</div><h2>STOCK TOKEN TERMINAL</h2></div><div class="search-wrap"><input id="stockSearch" class="input" placeholder="Search ticker or company…"><button id="clearStock" class="icon-btn">×</button></div></div>
+ <div class="grid stock-grid"><article class="card stock-list" id="stockList"><div class="loading">Loading Stock Tokens…</div></article><article class="card stock-detail" id="stockDetail"><div class="empty">Select an asset to inspect its live quote and onchain deployment.</div></article></div>
+</section>
+
+<section id="defi" class="section wrap">
+ <div class="section-head"><div><div class="eyebrow">03 // OPPORTUNITIES</div><h2>WHAT CAN YOUR ASSET DO?</h2></div></div>
+ <div class="grid three"><article class="card feature"><span class="num">01</span><h3>LENDING</h3><p>Find supported lending markets and inspect collateral, liquidity and protocol details before interacting.</p><span class="tag">VERIFIED DATA ONLY</span></article><article class="card feature"><span class="num">02</span><h3>LIQUIDITY</h3><p>Research supported pools and compare liquidity and volume without invented APYs or fake quotes.</p><span class="tag">NO FAKE APY</span></article><article class="card feature"><span class="num">03</span><h3>SWAP ROUTING</h3><p>Prepare for route-aware execution with transparent slippage, fees and protocol-risk information.</p><span class="tag">EXECUTION READY</span></article></div>
+ <div class="notice">Live protocol yields and executable quotes require verified integrations. This build intentionally does not fabricate market numbers.</div>
+</section>
+
+<section id="bridge" class="section wrap"><div class="section-head"><div><div class="eyebrow">04 // MOVE CAPITAL</div><h2>BRIDGE INTELLIGENCE</h2></div><button id="refreshBridge" class="btn">↻ Refresh Routes</button></div><div id="bridgeGrid" class="grid three"></div></section>
+
+<section id="scanner" class="section wrap"><div class="section-head"><div><div class="eyebrow">05 // SECURITY RESEARCH</div><h2>CONTRACT INTELLIGENCE</h2></div></div>
+ <div class="scanner card"><div class="scanner-form"><input id="scanInput" class="input" placeholder="0x contract or wallet address"><button id="scan" class="btn primary">SCAN →</button><button id="paste" class="btn">Paste</button><p class="muted">Read-only technical inspection. No transaction is sent.</p></div><div id="scanResult" class="scan-result"><div class="empty">Paste an address and run a scan.</div></div></div>
+</section>
+
+<section id="discover" class="section wrap"><div class="section-head"><div><div class="eyebrow">06 // ECOSYSTEM</div><h2>DISCOVER PROJECTS</h2></div><button id="submitBtn" class="btn primary">＋ Submit Project</button></div><div id="projects" class="grid three"><div class="loading">Loading approved projects…</div></div></section>
+
+<section class="section wrap final"><div class="eyebrow">BUILD WITH PURPOSE</div><h2>THE INTERFACE FOR<br>ROBINHOOD CHAIN FINANCE.</h2><p>Independent. Non-custodial. Transparent by design.</p><a class="btn" target="_blank" rel="noopener" href="https://robinhoodchain.blockscout.com/">Open Blockscout ↗</a></section>
+</main>
+
+<footer><span>RH//COPILOT · 2026</span><span>INDEPENDENT · NON-CUSTODIAL · NOT FINANCIAL ADVICE</span><a target="_blank" rel="noopener" href="https://robinhoodchain.blockscout.com/">BLOCKSCOUT ↗</a></footer>
+
+<div id="toast" class="toast"></div>
+<div id="modal" class="modal" aria-hidden="true"><div class="modal-box"><button id="close" class="close">×</button><div class="eyebrow">PROJECT SUBMISSION</div><h2>LIST YOUR PROJECT</h2><p class="muted">Submit for admin review. Approved projects appear in Discover.</p><form id="projectForm"><input name="name" class="input" required maxlength="80" placeholder="Project name"><select name="category" class="input"><option>DEFI</option><option>RWA</option><option>TOOL</option><option>NFT</option><option>INFRA</option><option>OTHER</option></select><input name="contract" class="input" placeholder="Contract address (optional)"><input name="website" class="input" placeholder="Website / docs (optional)"><textarea name="description" class="input" required maxlength="500" placeholder="What does it do?"></textarea><button class="btn primary" type="submit">Submit for Review →</button></form></div></div>
+<script src="app.js"></script>
+</body></html>

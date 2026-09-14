@@ -102,5 +102,5 @@ app.get('/api/bridge-info',(_req,res)=>res.json({routes:[
  {name:'Chainlink CCIP / Transporter',speed:'Minutes, source-chain dependent',bestFor:'Cross-chain token transfer and messaging',official:true}
 ],note:'Live fee/ETA quotes are not fabricated; integrate a route provider before execution.'}));
 
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'index.html')));
+app.get('/{*splat}',(req,res)=>res.sendFile(path.join(__dirname,'index.html')));
 app.listen(PORT,()=>console.log(`Robinhood Chain Copilot listening on http://localhost:${PORT}`));
