@@ -1,1 +1,0 @@
-{"name":"rh-hub","version":"2.0.0","private":true,"type":"commonjs","scripts":{"start":"node server.js"},"dependencies":{"express":"^5.1.0"}}
